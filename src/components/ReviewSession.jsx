@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import useStore from '../store/useStore';
 import { getDueCards } from '../logic/scheduler';
 import Flashcard from './Flashcard';
@@ -8,38 +8,41 @@ export default function ReviewSession({ deckId }) {
   const reviewCard = useStore((s) => s.reviewCard);
 
   const deck = decks.find((d) => d.id === deckId);
-  const [dueCards, setDueCards] = useState([]);
-  const [index, setIndex] = useState(0);
+
+  const dueCards = useMemo(() => (deck ? getDueCards(deck.cards) : []), [deck]);
+
+  const [remainingIds, setRemainingIds] = useState([]);
+  const [initialTotal, setInitialTotal] = useState(0);
   const [finished, setFinished] = useState(false);
-  const [sessionCards, setSessionCards] = useState([]);
 
   useEffect(() => {
-    if (deck) {
-      const due = getDueCards(deck.cards);
-      setDueCards(due);
-      setSessionCards([...due]);
-      setIndex(0);
+    if (deckId) {
+      const due = deck ? getDueCards(deck.cards) : [];
+      setRemainingIds(due.map((c) => c.id));
+      setInitialTotal(due.length);
       setFinished(due.length === 0);
     }
-  }, [deck]);
+  }, [deckId]);
 
-  const currentCard = sessionCards[index];
+  const currentCard = useMemo(() => {
+    if (!deck || remainingIds.length === 0) return null;
+    return deck.cards.find((c) => c.id === remainingIds[0]) || null;
+  }, [deck, remainingIds]);
 
   const handleRate = useCallback(
     (rating) => {
       if (!currentCard) return;
       reviewCard(deckId, currentCard.id, rating);
 
-      const remaining = sessionCards.filter((c) => c.id !== currentCard.id);
-      if (remaining.length === 0) {
-        setFinished(true);
-        setSessionCards([]);
-      } else {
-        setSessionCards(remaining);
-        setIndex(0);
-      }
+      setRemainingIds((prev) => {
+        const next = prev.slice(1);
+        if (next.length === 0) {
+          setFinished(true);
+        }
+        return next;
+      });
     },
-    [currentCard, deckId, reviewCard, sessionCards]
+    [currentCard, deckId, reviewCard]
   );
 
   if (!deck) {
@@ -57,7 +60,7 @@ export default function ReviewSession({ deckId }) {
           <h2>Session Complete</h2>
           <p>All due cards reviewed. Great work!</p>
           <p className="session-stats">
-            Reviewed {dueCards.length - sessionCards.length} of {dueCards.length} cards
+            Reviewed {initialTotal - remainingIds.length} of {initialTotal} cards
           </p>
         </div>
       </div>
@@ -69,18 +72,22 @@ export default function ReviewSession({ deckId }) {
       <div className="session-header">
         <h2>{deck.name}</h2>
         <span className="session-progress">
-          {sessionCards.length} card{sessionCards.length !== 1 ? 's' : ''} remaining
+          {remainingIds.length} card{remainingIds.length !== 1 ? 's' : ''} remaining
         </span>
       </div>
 
-      <Flashcard
-        key={currentCard?.id}
-        card={currentCard}
-        front={currentCard?.front}
-        back={currentCard?.back}
-        onRate={handleRate}
-        showRating
-      />
+      {currentCard ? (
+        <Flashcard
+          key={currentCard.id}
+          card={currentCard}
+          front={currentCard.front}
+          back={currentCard.back}
+          onRate={handleRate}
+          showRating
+        />
+      ) : (
+        <p className="empty-text">No cards to review.</p>
+      )}
     </div>
   );
 }
