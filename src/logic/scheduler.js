@@ -1,12 +1,7 @@
-import { isBefore, startOfDay } from 'date-fns';
-
 export function getDueCards(cards) {
-  const today = startOfDay(new Date());
+  const now = Date.now();
   return cards
-    .filter((card) => {
-      const nextDate = new Date(card.nextReviewDate);
-      return isBefore(nextDate, today) || nextDate.getTime() === today.getTime();
-    })
+    .filter((card) => new Date(card.nextReviewDate).getTime() <= now)
     .sort((a, b) => new Date(a.nextReviewDate) - new Date(b.nextReviewDate));
 }
 

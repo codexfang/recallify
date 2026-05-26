@@ -98,7 +98,7 @@ export default function DeckSidebar({ view, onViewChange }) {
                 className="deck-link"
                 onClick={() => {
                   setActiveDeck(deck.id);
-                  onViewChange('review');
+                  onViewChange('deck');
                 }}
               >
                 <span className="deck-name">{deck.name}</span>

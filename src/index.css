@@ -353,7 +353,8 @@ a {
   gap: 24px;
 }
 
-.dashboard-header {
+.dashboard-header,
+.deck-view-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -361,13 +362,15 @@ a {
   gap: 12px;
 }
 
-.dashboard-header h2 {
+.dashboard-header h2,
+.deck-view-header h2 {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.dashboard-actions {
+.dashboard-actions,
+.deck-view-actions {
   display: flex;
   gap: 8px;
 }
@@ -456,6 +459,23 @@ a {
   transition: width 0.4s ease;
 }
 
+.deck-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.deck-view-meta {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.deck-view-header .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .review-session {
   display: flex;
   flex-direction: column;
@@ -470,9 +490,20 @@ a {
   justify-content: space-between;
 }
 
-.session-header h2 {
+.session-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.session-header-left h2 {
   font-size: 20px;
   font-weight: 700;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
 .session-progress {
@@ -713,9 +744,20 @@ a {
     flex: none;
   }
 
-  .dashboard-header {
+  .dashboard-header,
+  .deck-view-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .session-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .session-header-left {
+    width: 100%;
   }
 
   .add-card-form {

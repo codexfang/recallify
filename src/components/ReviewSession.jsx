@@ -3,7 +3,7 @@ import useStore from '../store/useStore';
 import { getDueCards } from '../logic/scheduler';
 import Flashcard from './Flashcard';
 
-export default function ReviewSession({ deckId }) {
+export default function ReviewSession({ deckId, onDone }) {
   const decks = useStore((s) => s.decks);
   const reviewCard = useStore((s) => s.reviewCard);
 
@@ -62,6 +62,9 @@ export default function ReviewSession({ deckId }) {
           <p className="session-stats">
             Reviewed {initialTotal - remainingIds.length} of {initialTotal} cards
           </p>
+          <button className="btn btn-primary" onClick={onDone} style={{ marginTop: 16 }}>
+            Back to Deck
+          </button>
         </div>
       </div>
     );
@@ -70,7 +73,12 @@ export default function ReviewSession({ deckId }) {
   return (
     <div className="main-content review-session">
       <div className="session-header">
-        <h2>{deck.name}</h2>
+        <div className="session-header-left">
+          <button className="btn btn-outline btn-sm" onClick={onDone}>
+            ← Back
+          </button>
+          <h2>{deck.name}</h2>
+        </div>
         <span className="session-progress">
           {remainingIds.length} card{remainingIds.length !== 1 ? 's' : ''} remaining
         </span>

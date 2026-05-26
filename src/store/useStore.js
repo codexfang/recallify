@@ -14,7 +14,7 @@ function createCard(front, back) {
     easinessFactor: 2.5,
     interval: 0,
     repetition: 0,
-    nextReviewDate: new Date().toISOString(),
+    nextReviewDate: new Date(0).toISOString(),
     lastReviewedAt: null,
     createdAt: new Date().toISOString(),
   };
